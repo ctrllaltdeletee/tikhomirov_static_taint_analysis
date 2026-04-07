@@ -1,0 +1,42 @@
+rules:
+  - id: command-injection
+    message: |
+      User-controlled data used as an argument in subprocess.run. Even with shell=False,
+      this can be dangerous if the argument contains flags or special characters that
+      alter the command's behavior. Validate or sanitize the input.
+    languages: [python]
+    severity: WARNING
+    mode: taint
+    pattern-sources:
+      - pattern: request.args.get(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: subprocess.run([..., $ARG, ...], ...)
+          - focus-metavariable: $ARG
+    metadata:
+      cwe: "CWE-78"
+  - id: weak-random
+    message: |
+      Use of weak random number generator from 'random' module. This is not suitable
+      for security-sensitive contexts. Consider using 'secrets' module instead.
+    languages: [python]
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern: random.randrange(...)
+    metadata:
+      cwe: "CWE-330"
+      
+  - id: xpath-injection
+    message: |
+      Potential XPath injection vulnerability. User-controlled data flows into an XPath query,
+      allowing an attacker to manipulate the query and extract sensitive data.
+    languages: [python]
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - pattern: request.args.get(...)
+    pattern-sinks:
+      - pattern: $XML.xpath(...)
+    metadata:
+      cwe: "CWE-643"
