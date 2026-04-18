@@ -13,7 +13,8 @@ Gyp_6A.py,TRUE,xss
 Gyp_6B.py,FALSE,
 Gyp_7A.py,TRUE,deserialization
 Gyp_7B.py,TRUE,deserialization
-Gyp_8.py,TRUE,sqli
+Gyp_8A.py,TRUE,sqli
+Gyp_8B.py,TRUE,sqli
 Gyp_9.py,TRUE,xpath
 Gyp_10A.py,TRUE,code_injection
 Gyp_10B.py,TRUE,code_injection
