@@ -1,6 +1,10 @@
+from flask import Flask, request
+import sqlite3
+
+app = Flask(__name__)
+
 @app.route('/sanitized_sql')
 def sanitized_sql():
-    from flask import request
     raw = request.args.get('id')
     safe_int = int(raw)
     conn = sqlite3.connect('test.db')
