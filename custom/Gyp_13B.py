@@ -26,6 +26,6 @@ def cmd_isinstance():
     if isinstance(handler, UnsafeHandler):
         handler.execute(cmd)
     else:
-        return "Safe mode"
+        return "safe mode"
     
-    return "Executed"
+    return "done"
