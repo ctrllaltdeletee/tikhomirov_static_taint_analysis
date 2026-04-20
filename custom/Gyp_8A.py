@@ -20,4 +20,4 @@ def sqli_identity():
     conn = sqlite3.connect('example.db')
     cursor = conn.cursor()
     cursor.execute(sql)
-    return "Done"
+    return "done"
