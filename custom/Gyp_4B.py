@@ -10,4 +10,4 @@ def sanitized_sql():
     conn = sqlite3.connect('test.db')
     query = "SELECT * FROM users WHERE id = " + str(safe_int)
     conn.execute(query)
-    return "ok"
+    return "done"
