@@ -9,4 +9,4 @@ def safe_sql():
     conn = sqlite3.connect('test.db')
     query = "SELECT * FROM users WHERE id = " + user_input
     conn.execute(query)
-    return "ok"
+    return "done"
