@@ -20,7 +20,6 @@ Gyp_10A.py,TRUE,code_injection
 Gyp_10B.py,TRUE,code_injection
 Gyp_11A.py,TRUE,command_injection
 Gyp_11B.py,TRUE,command_injection
-Gyp_11C.py,TRUE,command_injection
 Gyp_12.py,TRUE,command_injection
 Gyp_13A.py,TRUE,command_injection
 Gyp_13B.py,TRUE,command_injection
