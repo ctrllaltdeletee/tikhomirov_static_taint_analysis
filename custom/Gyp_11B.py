@@ -1,16 +1,11 @@
-from flask import Flask, request
-import os
-
-app = Flask(__name__)
-
-@app.route('/list_index_dynamic')
-def list_index_dynamic():
-    idx = request.args.get('idx', '0')
+@app.route('/list_flow')
+def list_flow():
+    idx = request.args.get('idx')
+    user_cmd = request.args.get('cmd')
+    cmds = ['echo hello', user_cmd] 
     try:
         index = int(idx)
     except:
         index = 0
-    commands = ['echo safe', 'rm -rf /']
-    cmd = commands[index]
+    cmd = cmds[index] 
     os.system(cmd)
-    return "Executed"
