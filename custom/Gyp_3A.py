@@ -10,3 +10,4 @@ def cmd_conditional():
     if 'safe' in bar:
         bar = 'echo safe'
     subprocess.run(bar, shell=True)
+    return "done"
