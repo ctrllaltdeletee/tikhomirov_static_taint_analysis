@@ -43,7 +43,6 @@ def get_file_category(filename):
         "Gyp_10B.py": 10,
         "Gyp_11A.py": 11,
         "Gyp_11B.py": 11,
-        "Gyp_11C.py": 11,
         "Gyp_12.py": 12,
         "Gyp_13A.py": 13,
         "Gyp_13B.py": 13,
