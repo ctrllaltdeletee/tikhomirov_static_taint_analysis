@@ -11,3 +11,4 @@ def dict_flow():
     d[key] = data
     cmd = d[key]
     os.system(cmd)
+    return "done"
