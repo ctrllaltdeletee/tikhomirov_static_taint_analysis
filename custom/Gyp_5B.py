@@ -1,8 +1,7 @@
 from flask import Flask
+import secrets
 
 app = Flask(__name__)
-
-import secrets
 
 @app.route('/strong_random')
 def strong_random():
