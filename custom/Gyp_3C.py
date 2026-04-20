@@ -7,3 +7,4 @@ app = Flask(__name__)
 def cmd_os():
     param = request.args.get('cmd')
     os.system(param)
+    return "done"
