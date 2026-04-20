@@ -7,3 +7,4 @@ app = Flask(__name__)
 def cmd_list():
     param = request.args.get('file')
     subprocess.run(['ls', param])
+    return "done"
