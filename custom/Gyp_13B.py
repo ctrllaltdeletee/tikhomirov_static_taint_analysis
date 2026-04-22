@@ -1,28 +1,21 @@
 from flask import Flask, request
-import os
+import subprocess
 
 app = Flask(__name__)
 
-class UnsafeHandler:
-    def execute(self, cmd):
-        os.system(cmd)
-class SafeHandler:
-    def execute(self, cmd):
-        print(f"Would execute: {cmd}")
+class Unsafe:
+    def unsafe_exec(self, cmd):
+        subprocess.run(cmd, shell=True)
+    
+    def safe_exec(self, cmd):
+        return "safe"
 
-def get_handler(flag):
-    if flag:
-        return UnsafeHandler()
-    else:
-        return SafeHandler()
-
-@app.route('/cmd_isinstance')
-def cmd_isinstance():
-    cmd = request.args.get('cmd', '')
-    flag = request.args.get('flag', 'false') == 'true'
-    handler = get_handler(flag)
-    if isinstance(handler, UnsafeHandler):
-        handler.execute(cmd)
-    else:
-        return "safe mode"
+@app.route('/test_dynamic_method')
+def test_dynamic_method():
+    cmd = request.args.get('cmd')
+    method_name = request.args.get('method')
+    handler = Unsafe()
+    method = getattr(handler, method_name, None)
+    if method:
+        method(cmd)    
     return "done"
