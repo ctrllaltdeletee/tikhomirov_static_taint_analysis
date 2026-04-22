@@ -14,8 +14,4 @@ def list_flow():
         index = 0
     cmd = cmds[index] 
     os.system(cmd)
-    return "done" 
-
-if __name__ == '__main__':
-    app.run()
     return "done"
