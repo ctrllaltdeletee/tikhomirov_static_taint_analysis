@@ -1,28 +1,24 @@
 from flask import Flask, request
-import os
+import subprocess
 
 app = Flask(__name__)
 
-class UnsafeHandler:
+class Safe:
     def execute(self, cmd):
-        os.system(cmd)
-class SafeHandler:
+        return "safe"
+
+class Unsafe:
     def execute(self, cmd):
-        print(f"Would execute: {cmd}")
+        subprocess.run(cmd, shell=True)
 
-def get_handler(flag):
-    if flag:
-        return UnsafeHandler()
-    else:
-        return SafeHandler()
-
-@app.route('/cmd_isinstance')
-def cmd_isinstance():
-    cmd = request.args.get('cmd', '')
-    flag = request.args.get('flag', 'false') == 'true'
-    handler = get_handler(flag)
-    if isinstance(handler, UnsafeHandler):
-        handler.execute(cmd)
-    else:
-        return "safe mode"
+@app.route('/dynamic_typing_fn')
+def dynamic_typing_fn():
+    t = request.args.get('type')
+    cmd = request.args.get('cmd')
+    handlers = {
+        'safe': Safe(),
+        'unsafe': Unsafe()
+    }
+    obj = handlers.get(t, Safe())
+    obj.execute(cmd)
     return "done"
