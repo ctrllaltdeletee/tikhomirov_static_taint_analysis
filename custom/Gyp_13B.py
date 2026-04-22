@@ -20,12 +20,9 @@ def get_handler(flag):
 def cmd_isinstance():
     cmd = request.args.get('cmd', '')
     flag = request.args.get('flag', 'false') == 'true'
-    
     handler = get_handler(flag)
-    
     if isinstance(handler, UnsafeHandler):
         handler.execute(cmd)
     else:
         return "safe mode"
-    
     return "done"
