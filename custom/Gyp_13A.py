@@ -17,8 +17,8 @@ def get_handler(flag):
     else:
         return Unsafe()
 
-@app.route('/test')
-def test():
+@app.route('/dynamic_typing_cond')
+def dynamic_typing_cond():
     flag = request.args.get('flag')
     cmd = request.args.get('cmd')
     handler = get_handler(flag)
