@@ -2,8 +2,8 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route('/eval_obfuscated')
-def eval_obfuscated():
+@app.route('/func_obfuscated')
+def func_obfuscated():
     data = request.args.get('code')
     part1 = request.args.get('p1')
     part2 = request.args.get('p2')
