@@ -11,8 +11,8 @@ class Unsafe:
     def execute(self, cmd):
         subprocess.run(cmd, shell=True)
 
-@app.route('/dynamic_typing_cond')
-def dynamic_typing_cond():
+@app.route('/dynamic_typing_dict')
+def dynamic_typing_dict():
     t = request.args.get('type')
     cmd = request.args.get('cmd')
     handlers = {
