@@ -4,8 +4,8 @@ import os
 
 app = Flask(__name__)
 
-@app.route('/test')
-def test():
+@app.route('/cmdi_chain')
+def cmdi_chain():
     user_input = request.args.get('cmd', '')
     s = user_input
     if os.urandom(1)[0] > 128:
