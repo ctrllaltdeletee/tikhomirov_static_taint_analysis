@@ -1,10 +1,17 @@
+from flask import request
 import yaml
-from flask import Flask, request
 
-app = Flask(__name__)
+class OpaqueWrapper:
+    def do_something(self, data):
+        return data
 
-@app.route('/yaml_unsafe')
-def yaml_unsafe():
-    data = request.args.get('data')
-    obj = yaml.load(data, Loader=yaml.Loader)
-    return str(obj)
+def inlined_deserialization():
+    param = request.headers.get("test")
+    if not param:
+        param = ""
+
+    wrapper = OpaqueWrapper()
+    bar = wrapper.do_something(param)
+
+    yobj = yaml.load(bar, Loader=yaml.Loader)
+    return yobj
