@@ -1,11 +1,14 @@
-from flask import Flask, request
-import pickle
-import base64
+from flask import request
+import yaml
+from helper_module import OpaqueWrapper
 
-app = Flask(__name__)
+def external_deserialization():
+    param = request.headers.get("test")
+    if not param:
+        param = ""
 
-@app.route('/pickle_unsafe')
-def pickle_unsafe():
-    data = request.args.get('data')
-    obj = pickle.loads(base64.b64decode(data))
-    return str(obj)
+    wrapper = OpaqueWrapper()
+    bar = wrapper.do_something(param)
+
+    yobj = yaml.load(bar, Loader=yaml.Loader)
+    return yobj
