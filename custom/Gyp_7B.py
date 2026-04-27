@@ -1,13 +1,13 @@
 from flask import request
 import yaml
-from helper_module import OpaqueWrapper
+import helper_module
 
 def external_deserialization():
     param = request.headers.get("test")
     if not param:
         param = ""
 
-    wrapper = OpaqueWrapper()
+    wrapper = helper_module.OpaqueWrapper()
     bar = wrapper.do_something(param)
 
     yobj = yaml.load(bar, Loader=yaml.Loader)
