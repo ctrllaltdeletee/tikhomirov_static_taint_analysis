@@ -267,7 +267,7 @@ def main():
     print("="*80)
     header = f"{'Кат':<4} {'Инструмент':<10} {'TP':<4} {'FP':<4} {'TN':<4} {'FN':<4} {'Prec':<6} {'Recall':<7} {'F1':<6}"
     print(header)
-    print("="*80)
+    print("-"*60)
 
     all_cats = sorted(set(bandit_by_cat.keys()) | set(semgrep_by_cat.keys()) | set(codeql_by_cat.keys()))
     for cat in all_cats:
@@ -399,7 +399,7 @@ def main():
     with open(report_file, "w", encoding='utf-8') as f:
         f.write("Результаты тестирования на стандартном наборе правил\n")
         f.write(header + "\n")
-        f.write("="*80 + "\n")
+        f.write("-"*60 + "\n")
         for cat in all_cats:
             for tool, cat_metrics in [("Bandit", bandit_by_cat), ("Semgrep", semgrep_by_cat), ("CodeQL", codeql_by_cat)]:
                 m = cat_metrics.get(cat, {'TP':0,'FP':0,'TN':0,'FN':0,'precision':0.0,'recall':0.0,'f1':0.0})
@@ -411,7 +411,7 @@ def main():
             f.write(f"{name}: TP={m['TP']}, FP={m['FP']}, TN={m['TN']}, FN={m['FN']}, "
                     f"Precision={m['precision']:.3f}, Recall={m['recall']:.3f}, F1={m['f1']:.3f}\n")
 
-        f.write("\n\nРезультаты тестирования на собственном наборе правил\n")
+        f.write("\n\nРезультаты тестирования Semgrep на собственном наборе правил\n")
         for cat in sorted(CUSTOM_CATEGORIES):
             m = custom_metrics_by_cat.get(cat, {})
             f.write(f"Категория {cat}: TP={m.get('TP',0)}, FP={m.get('FP',0)}, TN={m.get('TN',0)}, FN={m.get('FN',0)}, "
