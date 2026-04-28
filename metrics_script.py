@@ -16,13 +16,17 @@ CODEQL_CMD = "codeql"
 SEMGREP_RULES_SOURCE = Path("/home/tikhomirov/Semgrep/semgrep-rules/python")
 CUSTOM_SEMGREP_RULE = Path("/home/tikhomirov/Semgrep/custom_semgrep.yml")
 CODEQL_QUERY = "python-security-extended"
-
 CUSTOM_TEST_FILES = ["Gyp_3B.py", "Gyp_5A.py", "Gyp_9.py"]
 CUSTOM_CATEGORIES = {3, 5, 9}
+HELPERS_TEST_FILES = ["Gyp_1B.py", "Gyp_7B.py", "Gyp_8B.py"]
+HELPERS_SOURCE_DIR = Path("/home/tikhomirov/Downloads/helpers")
+HELPERS_FILE = "helpers.py"
+
 
 def get_file_category(filename):
     mapping = {
-        "Gyp_1.py": 1,
+        "Gyp_1A.py": 1,
+        "Gyp_1B.py": 1,
         "Gyp_2A.py": 2,
         "Gyp_2B.py": 2,
         "Gyp_3A.py": 3,
@@ -48,6 +52,7 @@ def get_file_category(filename):
     }
     return mapping.get(filename)
 
+
 def load_ground_truth(csv_file):
     gt = {}
     with open(csv_file, newline='', encoding='utf-8') as f:
@@ -58,8 +63,10 @@ def load_ground_truth(csv_file):
             gt[fname] = vuln
     return gt
 
+
 def ensure_dir(path):
     path.mkdir(parents=True, exist_ok=True)
+
 
 def prepare_work_dir(source_tests, source_rules, work_dir):
     if work_dir.exists():
@@ -86,14 +93,15 @@ def prepare_work_dir(source_tests, source_rules, work_dir):
 
     return tests_dest, rules_dest
 
+
 def run_bandit(tests_dir, out_file):
     cmd = [BANDIT_CMD, "-r", str(tests_dir), "-f", "csv", "-o", str(out_file)]
     print("Запуск Bandit...")
     subprocess.run(cmd)
     print("Bandit завершён")
 
+
 def run_semgrep(tests_dir, config, out_file):
-    """config может быть директорией или файлом, либо 'auto'."""
     if config is None:
         cmd = [SEMGREP_CMD, "scan", "--config", "auto", "--json", "-o", str(out_file), str(tests_dir)]
     else:
@@ -101,6 +109,7 @@ def run_semgrep(tests_dir, config, out_file):
     print(f"Запуск Semgrep с конфигурацией {config if config else 'auto'}...")
     subprocess.run(cmd)
     print("Semgrep завершён")
+
 
 def run_codeql(tests_dir, out_file):
     db_path = tests_dir.parent / "codeql-db"
@@ -117,6 +126,7 @@ def run_codeql(tests_dir, out_file):
     subprocess.run(cmd_analyze)
     print("CodeQL завершён")
 
+
 def parse_bandit_csv(file):
     warned = set()
     if not file.exists():
@@ -128,6 +138,7 @@ def parse_bandit_csv(file):
             if fpath:
                 warned.add(Path(fpath).name)
     return warned
+
 
 def parse_semgrep_json(file):
     warned = set()
@@ -154,6 +165,7 @@ def parse_semgrep_json(file):
             warned.add(fname)
     return warned
 
+
 def parse_codeql_csv(file):
     warned = set()
     if not file.exists():
@@ -166,6 +178,7 @@ def parse_codeql_csv(file):
                     warned.add(Path(cell).name)
                     break
     return warned
+
 
 def compute_metrics(warned_files, ground_truth_subset):
     TP = FP = TN = FN = 0
@@ -190,6 +203,7 @@ def compute_metrics(warned_files, ground_truth_subset):
         'f1': f1
     }
 
+
 def compute_metrics_by_category(warned_files, ground_truth, file_to_cat):
     files_by_cat = defaultdict(list)
     for fname in ground_truth.keys():
@@ -203,6 +217,7 @@ def compute_metrics_by_category(warned_files, ground_truth, file_to_cat):
         subset = {f: ground_truth[f] for f in flist}
         metrics[cat] = compute_metrics(warned_files, subset)
     return metrics
+
 
 def main():
     if not SOURCE_TESTS.exists():
@@ -317,6 +332,72 @@ def main():
     print(f"  TP={custom_overall['TP']}, FP={custom_overall['FP']}, TN={custom_overall['TN']}, FN={custom_overall['FN']}")
     print(f"  Precision={custom_overall['precision']:.3f}, Recall={custom_overall['recall']:.3f}, F1={custom_overall['f1']:.3f}")
 
+    print("\n" + "="*80)
+    print("Тестирование CodeQL на файлах, использующих helpers.py")
+    print("="*80)
+
+    tester_dir = WORK_DIR / "tester"
+    ensure_dir(tester_dir)
+
+    missing_files = []
+    for fname in HELPERS_TEST_FILES:
+        src = SOURCE_TESTS / fname
+        if src.exists():
+            shutil.copy(src, tester_dir / fname)
+        else:
+            missing_files.append(fname)
+    if missing_files:
+        print(f"Предупреждение: следующие файлы не найдены в {SOURCE_TESTS}: {missing_files}")
+
+    helpers_src = HELPERS_SOURCE_DIR / HELPERS_FILE
+    if helpers_src.exists():
+        shutil.copy(helpers_src, tester_dir / HELPERS_FILE)
+        print(f"Скопирован {HELPERS_FILE} из {HELPERS_SOURCE_DIR}")
+    else:
+        print(f"Ошибка: {helpers_src} не найден, тестирование с helpers невозможно")
+        sys.exit(1)
+
+    print(f"Содержимое {tester_dir}: {list(tester_dir.glob('*.py'))}")
+
+    helpers_codeql_out = WORK_DIR / "codeql_helpers_results.csv"
+    run_codeql(tester_dir, helpers_codeql_out)
+
+    helpers_warned = parse_codeql_csv(helpers_codeql_out)
+
+    helpers_ground_truth = {}
+    for fname in HELPERS_TEST_FILES:
+        if fname in ground_truth:
+            helpers_ground_truth[fname] = ground_truth[fname]
+        else:
+            print(f"Предупреждение: для файла {fname} нет данных в ground truth, он будет пропущен")
+
+    if not helpers_ground_truth:
+        print("Нет данных для вычисления метрик (нет ground truth).")
+        helpers_metrics_by_cat = {}
+    else:
+        def helpers_cat(fname):
+            cat_map = {
+                "Gyp_1B.py": 1,
+                "Gyp_7B.py": 7,
+                "Gyp_8B.py": 8,
+            }
+            return cat_map.get(fname, None)
+
+        helpers_metrics_by_cat = compute_metrics_by_category(helpers_warned, helpers_ground_truth, helpers_cat)
+
+        print("\n" + "-"*60)
+        print("Результаты тестирования CodeQL на файлах с helpers (по категориям)")
+        print("-"*60)
+        for cat in sorted(helpers_metrics_by_cat.keys()):
+            m = helpers_metrics_by_cat[cat]
+            print(f"Категория {cat}: TP={m['TP']}, FP={m['FP']}, TN={m['TN']}, FN={m['FN']}, "
+                  f"Precision={m['precision']:.3f}, Recall={m['recall']:.3f}, F1={m['f1']:.3f}")
+
+        helpers_overall = compute_metrics(helpers_warned, helpers_ground_truth)
+        print(f"\nОбщие метрики:")
+        print(f"  TP={helpers_overall['TP']}, FP={helpers_overall['FP']}, TN={helpers_overall['TN']}, FN={helpers_overall['FN']}")
+        print(f"  Precision={helpers_overall['precision']:.3f}, Recall={helpers_overall['recall']:.3f}, F1={helpers_overall['f1']:.3f}")
+
     report_file = Path.cwd() / "aggregator_results.txt"
     with open(report_file, "w", encoding='utf-8') as f:
         f.write("Результаты тестирования на стандартном наборе правил\n")
@@ -327,6 +408,7 @@ def main():
                 m = cat_metrics.get(cat, {'TP':0,'FP':0,'TN':0,'FN':0,'precision':0.0,'recall':0.0,'f1':0.0})
                 f.write(f"{cat:<4} {tool:<10} {m['TP']:<4} {m['FP']:<4} {m['TN']:<4} {m['FN']:<4} {m['precision']:.3f}  {m['recall']:.3f}   {m['f1']:.3f}\n")
             f.write("\n")
+
         f.write("\nОбщие метрики\n")
         for name, m in [("Bandit", overall_bandit), ("Semgrep", overall_semgrep), ("CodeQL", overall_codeql)]:
             f.write(f"{name}: TP={m['TP']}, FP={m['FP']}, TN={m['TN']}, FN={m['FN']}, "
@@ -341,7 +423,19 @@ def main():
                 f"TN={custom_overall['TN']}, FN={custom_overall['FN']}, "
                 f"Precision={custom_overall['precision']:.3f}, Recall={custom_overall['recall']:.3f}, F1={custom_overall['f1']:.3f}\n")
 
+        if helpers_metrics_by_cat:
+            f.write("\n\nРезультаты тестирования CodeQL на файлах с helpers\n")
+            for cat in sorted(helpers_metrics_by_cat.keys()):
+                m = helpers_metrics_by_cat[cat]
+                f.write(f"Категория {cat}: TP={m['TP']}, FP={m['FP']}, TN={m['TN']}, FN={m['FN']}, "
+                        f"Precision={m['precision']:.3f}, Recall={m['recall']:.3f}, F1={m['f1']:.3f}\n")
+            helpers_overall = compute_metrics(helpers_warned, helpers_ground_truth)
+            f.write(f"\nОбщие метрики: TP={helpers_overall['TP']}, FP={helpers_overall['FP']}, "
+                    f"TN={helpers_overall['TN']}, FN={helpers_overall['FN']}, "
+                    f"Precision={helpers_overall['precision']:.3f}, Recall={helpers_overall['recall']:.3f}, F1={helpers_overall['f1']:.3f}\n")
+
     print(f"\nПолный отчёт сохранён в {report_file}")
+
 
 if __name__ == "__main__":
     main()
