@@ -19,6 +19,7 @@ CODEQL_QUERY = "python-security-extended"
 CUSTOM_TEST_FILES = ["Gyp_3B.py", "Gyp_5A.py", "Gyp_9.py"]
 CUSTOM_CATEGORIES = {3, 5, 9}
 HELPERS_TEST_FILES = ["Gyp_1B.py", "Gyp_7B.py", "Gyp_8B.py"]
+HELPERS_CATEGORIES = {1, 7, 8}
 HELPERS_SOURCE_DIR = Path("/home/tikhomirov/Downloads/helpers")
 HELPERS_FILE = "helpers.py"
 
@@ -266,7 +267,7 @@ def main():
     print("="*80)
     header = f"{'Кат':<4} {'Инструмент':<10} {'TP':<4} {'FP':<4} {'TN':<4} {'FN':<4} {'Prec':<6} {'Recall':<7} {'F1':<6}"
     print(header)
-    print("-"*80)
+    print("="*80)
 
     all_cats = sorted(set(bandit_by_cat.keys()) | set(semgrep_by_cat.keys()) | set(codeql_by_cat.keys()))
     for cat in all_cats:
@@ -319,9 +320,9 @@ def main():
 
     custom_metrics_by_cat = compute_metrics_by_category(semgrep_custom_warned, custom_ground_truth, custom_cat)
 
-    print("\n" + "-"*60)
-    print("Результаты тестирования на собственном наборе правил")
-    print("-"*60)
+    print("\n" + "="*80)
+    print("Результаты тестирования Semgrep на собственном наборе правил")
+    print("="*80)
     for cat in sorted(CUSTOM_CATEGORIES):
         m = custom_metrics_by_cat.get(cat, {'TP':0,'FP':0,'TN':0,'FN':0,'precision':0.0,'recall':0.0,'f1':0.0})
         print(f"Категория {cat}: TP={m['TP']}, FP={m['FP']}, TN={m['TN']}, FN={m['FN']}, "
@@ -376,18 +377,14 @@ def main():
         helpers_metrics_by_cat = {}
     else:
         def helpers_cat(fname):
-            cat_map = {
-                "Gyp_1B.py": 1,
-                "Gyp_7B.py": 7,
-                "Gyp_8B.py": 8,
-            }
-            return cat_map.get(fname, None)
+            cat = get_file_category(fname)
+            return cat if cat in HELPERS_CATEGORIES else None
 
         helpers_metrics_by_cat = compute_metrics_by_category(helpers_warned, helpers_ground_truth, helpers_cat)
 
-        print("\n" + "-"*60)
-        print("Результаты тестирования CodeQL на файлах с helpers (по категориям)")
-        print("-"*60)
+        print("\n" + "="*80)
+        print("Результаты тестирования CodeQL на файлах с helpers")
+        print("="*80)
         for cat in sorted(helpers_metrics_by_cat.keys()):
             m = helpers_metrics_by_cat[cat]
             print(f"Категория {cat}: TP={m['TP']}, FP={m['FP']}, TN={m['TN']}, FN={m['FN']}, "
@@ -402,7 +399,7 @@ def main():
     with open(report_file, "w", encoding='utf-8') as f:
         f.write("Результаты тестирования на стандартном наборе правил\n")
         f.write(header + "\n")
-        f.write("-"*80 + "\n")
+        f.write("="*80 + "\n")
         for cat in all_cats:
             for tool, cat_metrics in [("Bandit", bandit_by_cat), ("Semgrep", semgrep_by_cat), ("CodeQL", codeql_by_cat)]:
                 m = cat_metrics.get(cat, {'TP':0,'FP':0,'TN':0,'FN':0,'precision':0.0,'recall':0.0,'f1':0.0})
