@@ -7,7 +7,7 @@ def my_propagator(value):
     return value
 
 @app.route('/test')
-def test():
+def inlined_sqli():
     tainted = request.args.get('id', '')
     param = my_propagator(tainted)
     conn = sqlite3.connect(':memory:')
