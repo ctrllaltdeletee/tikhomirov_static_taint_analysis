@@ -1,5 +1,6 @@
 filename,vulnerable,vuln_type
-Gyp_1.py,TRUE,sqli
+Gyp_1A.py,TRUE,sqli
+Gyp_1B.py,TRUE,sqli
 Gyp_2A.py,TRUE,path_traversal
 Gyp_2B.py,TRUE,open_redirect
 Gyp_3A.py,TRUE,command_injection
