@@ -1,8 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route('/xss_false')
-def xss_false():
-    data = request.args.get('data')
-    return jsonify({"data": data})
+storage = {}
+
+@app.route('/store')
+def store():
+    storage['x'] = request.args.get('name', '')
+    return "stored"
+
+@app.route('/retrieve')
+def retrieve():
+    value = storage.get('x', '')
+    return f"<h1>{value}</h1>"
