@@ -11,7 +11,7 @@ Gyp_4B.py,FALSE,
 Gyp_5A.py,TRUE,weak_random
 Gyp_5B.py,FALSE,
 Gyp_6A.py,TRUE,xss
-Gyp_6B.py,FALSE,
+Gyp_6B.py,TRUE,xss
 Gyp_7A.py,TRUE,insecure_deserialization
 Gyp_7B.py,TRUE,insecure_deserialization
 Gyp_8A.py,TRUE,sqli
