@@ -10,6 +10,6 @@ def store():
     return "stored"
 
 @app.route('/retrieve')
-def retrieve():
+def xss_global():
     value = storage.get('x', '')
     return f"<h1>{value}</h1>"
