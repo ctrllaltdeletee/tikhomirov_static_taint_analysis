@@ -4,7 +4,7 @@ from helpers import my_propagator
 
 app = Flask(__name__)
 
-@app.route('/test')
+@app.route('/external_sqli')
 def external_sqli():
     tainted = request.args.get('id', '')
     param = my_propagator(tainted)
