@@ -6,7 +6,7 @@ app = Flask(__name__)
 def my_propagator(value):
     return value
 
-@app.route('/test')
+@app.route('/inlined_sqli')
 def inlined_sqli():
     tainted = request.args.get('id', '')
     param = my_propagator(tainted)
