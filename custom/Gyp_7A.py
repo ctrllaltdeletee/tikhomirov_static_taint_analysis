@@ -1,11 +1,14 @@
-from flask import request
+from flask import Flask, request
 import yaml
+
+app = Flask(__name__)
 
 class OpaqueWrapper:
     def do_something(self, data):
         return data
 
-def inlined_deserialization():
+@app.route('/insecure_deserialization')
+def insecure_deserialization():
     param = request.headers.get("test")
     if not param:
         param = ""
@@ -13,5 +16,5 @@ def inlined_deserialization():
     wrapper = OpaqueWrapper()
     bar = wrapper.do_something(param)
 
-    yobj = yaml.load(bar, Loader=yaml.Loader)
-    return yobj
+    yaml.load(bar, Loader=yaml.Loader)
+    return "done"
