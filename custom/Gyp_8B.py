@@ -4,8 +4,8 @@ from helpers import id3
 
 app = Flask(__name__)
 
-@app.route('/sqli_identity')
-def sqli_identity():
+@app.route('/external_sqli_id')
+def external_sqli_id():
     param = request.args.get('name', '')
     bar = id3(param)
     sql = f"SELECT * FROM users WHERE name = '{bar}'"
