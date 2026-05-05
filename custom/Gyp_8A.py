@@ -12,8 +12,8 @@ def id2(x):
 def id3(x):
     return id2(x)
 
-@app.route('/sqli_identity')
-def sqli_identity():
+@app.route('/inlined_sqli_id')
+def inlined_sqli_id():
     param = request.args.get('name', '')
     bar = id3(param)
     sql = f"SELECT * FROM users WHERE name = '{bar}'"
