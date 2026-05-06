@@ -5,5 +5,4 @@ app = Flask(__name__)
 @app.route('/xss_simple')
 def xss_simple():
     data = request.args.get('data')
-    template = f"<html><body>{data}</body></html>"
-    return render_template_string(template)
+    return f"<html><body>{data}</body></html>"
