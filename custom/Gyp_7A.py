@@ -7,8 +7,8 @@ class OpaqueWrapper:
     def do_something(self, data):
         return data
 
-@app.route('/insecure_deserialization')
-def insecure_deserialization():
+@app.route('/inlined_insecure_deserialization')
+def inlined_insecure_deserialization():
     param = request.headers.get("test")
     if not param:
         param = ""
