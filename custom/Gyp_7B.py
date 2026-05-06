@@ -4,8 +4,8 @@ from helpers import OpaqueWrapper
 
 app = Flask(__name__)
 
-@app.route('/external_deserialization')
-def external_deserialization():
+@app.route('/external_insecure_deserialization')
+def external_insecure_deserialization():
     param = request.headers.get("test")
     if not param:
         param = ""
