@@ -15,10 +15,7 @@ class Unsafe:
 def dynamic_typing_dict():
     t = request.args.get('type')
     cmd = request.args.get('cmd')
-    handlers = {
-        'safe': Safe(),
-        'unsafe': Unsafe()
-    }
+    handlers = {'safe': Safe(), 'unsafe': Unsafe()}
     obj = handlers.get(t, Safe())
     obj.execute(cmd)
     return "done"
