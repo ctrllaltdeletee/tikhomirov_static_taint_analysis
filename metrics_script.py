@@ -431,7 +431,7 @@ def main():
                     f"TN={helpers_overall['TN']}, FN={helpers_overall['FN']}, "
                     f"Precision={helpers_overall['precision']:.3f}, Recall={helpers_overall['recall']:.3f}, F1={helpers_overall['f1']:.3f}\n")
 
-    print(f"\nПолный отчёт сохранён в {report_file}")
+    print(f"\nПолный отчет сохранен в {report_file}")
 
 
 if __name__ == "__main__":
