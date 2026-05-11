@@ -188,7 +188,7 @@ def main():
         plt.tight_layout()
         plt.savefig("codeql_time_graph.png")
         plt.close()
-        print("График времени сохранён в codeql_time_graph.png")
+        print("График времени сохранен в codeql_time_graph.png")
 
         plt.figure(figsize=(10, 6))
         plt.plot(n_vals, avg_mem, 'g-', label='Средняя память (МБайт)', linewidth=1.5)
@@ -199,7 +199,7 @@ def main():
         plt.tight_layout()
         plt.savefig("codeql_memory_graph.png")
         plt.close()
-        print("График памяти сохранён в codeql_memory_graph.png")
+        print("График памяти сохранен в codeql_memory_graph.png")
 
     except ImportError:
         print("matplotlib не установлен, график не построен.")
