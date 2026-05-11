@@ -99,7 +99,7 @@ def run_bandit(tests_dir, out_file):
     cmd = [BANDIT_CMD, "-r", str(tests_dir), "-f", "csv", "-o", str(out_file)]
     print("Запуск Bandit...")
     subprocess.run(cmd)
-    print("Bandit завершён")
+    print("Bandit завершен")
 
 
 def run_semgrep(tests_dir, config, out_file):
@@ -109,7 +109,7 @@ def run_semgrep(tests_dir, config, out_file):
         cmd = [SEMGREP_CMD, "scan", "--config", str(config), "--json", "-o", str(out_file), str(tests_dir)]
     print(f"Запуск Semgrep с конфигурацией {config if config else 'auto'}...")
     subprocess.run(cmd)
-    print("Semgrep завершён")
+    print("Semgrep завершен")
 
 
 def run_codeql(tests_dir, out_file):
@@ -125,7 +125,7 @@ def run_codeql(tests_dir, out_file):
                    CODEQL_QUERY, "--format=csv", "--output", str(out_file)]
     print("Запуск анализа CodeQL...")
     subprocess.run(cmd_analyze)
-    print("CodeQL завершён")
+    print("CodeQL завершен")
 
 
 def parse_bandit_csv(file):
